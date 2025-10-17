@@ -1,6 +1,8 @@
 package de.htw.berlin.webtech.recipe_manager.web.dto;
 
+import jakarta.validation.constraints.*;
+
 public record StepCreateDto(
-        Integer position,
-        String text
+        @NotNull @PositiveOrZero Integer position,
+        @NotBlank @Size(max = 2000) String text
 ) {}

@@ -25,7 +25,7 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<Recipe> create(@RequestBody RecipeCreateDto dto) {
+    public ResponseEntity<Recipe> create(@RequestBody @jakarta.validation.Valid RecipeCreateDto dto) {
         Recipe created = service.create(dto);
         return ResponseEntity
                 .created(URI.create("/recipes/" + created.getId()))
