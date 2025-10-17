@@ -25,10 +25,13 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<Recipe> create(@RequestBody @jakarta.validation.Valid RecipeCreateDto dto) {
-        Recipe created = service.create(dto);
+    public ResponseEntity<de.htw.berlin.webtech.recipe_manager.web.dto.CreatedIdResponse> create(
+            @RequestBody @jakarta.validation.Valid de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto dto
+    ) {
+        var created = service.create(dto);
+        var body = new de.htw.berlin.webtech.recipe_manager.web.dto.CreatedIdResponse(created.getId());
         return ResponseEntity
                 .created(URI.create("/recipes/" + created.getId()))
-                .body(created);
+                .body(body);
     }
 }
