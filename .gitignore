@@ -1,49 +1,43 @@
-HELP.md
-.gradle
+# ---- Build / Gradle ----
+.gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+out/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
+# Gradle Wrapper (IM REPO BEHALTEN!)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# ---- Logs / Temp ----
+*.log
+*.tmp
+*.swp
+
+# ---- IDE / Editor ----
+# IntelliJ
+*.iml
+.idea/
+# VS Code
+.vscode/
+# Eclipse/STS
 .project
-.settings
+.classpath
+.settings/
+.apt_generated
+.factorypath
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
-
-# Logs / Temp
-*.log
-*.tmp
-*.swp
-
-# OS
+# ---- OS ----
 .DS_Store
 Thumbs.db
 
-# Optional: lokale Overrides, niemals committen
+# ---- Lokale Overrides (niemals committen) ----
 application-local.properties
