@@ -35,3 +35,15 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Logs / Temp
+*.log
+*.tmp
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Optional: lokale Overrides, niemals committen
+application-local.properties

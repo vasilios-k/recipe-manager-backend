@@ -1,0 +1,15 @@
+# Git & IDE
+.git
+.gitignore
+.idea
+.vscode
+**/*.iml
+
+# Gradle/Build Outputs
+.gradle
+build
+out
+
+# Sonstiges
+*.log
+.DS_Store
