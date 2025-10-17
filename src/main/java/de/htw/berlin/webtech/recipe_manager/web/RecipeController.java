@@ -5,6 +5,7 @@ import de.htw.berlin.webtech.recipe_manager.service.RecipeService;
 import de.htw.berlin.webtech.recipe_manager.web.dto.CreatedIdResponse;
 import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto;
 import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeReadDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeUpdateDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,13 @@ public class RecipeController {
         return ResponseEntity
                 .created(URI.create("/recipes/" + created.getId()))
                 .body(new CreatedIdResponse(created.getId()));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateBasic(@PathVariable Long id,
+                                            @RequestBody @jakarta.validation.Valid RecipeUpdateDto dto) {
+        service.updateBasic(id, dto);
+        return ResponseEntity.noContent().build(); // 204
     }
 
     @DeleteMapping("/{id}")

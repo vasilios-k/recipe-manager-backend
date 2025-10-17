@@ -5,6 +5,7 @@ import de.htw.berlin.webtech.recipe_manager.domain.Recipe;
 import de.htw.berlin.webtech.recipe_manager.repo.RecipeRepository;
 import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto;
 import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeReadDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeUpdateDto;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeCreateMapper;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeReadMapper;
 import org.springframework.http.HttpStatus;
@@ -50,11 +51,28 @@ public class RecipeService {
     }
 
     @Transactional
+    public void updateBasic(long id, RecipeUpdateDto dto) {
+        validateBaseline(dto.dietTags());
+        var r = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found"));
+
+        r.setTitle(dto.title());
+        r.setDescription(dto.description());
+        r.setPrepMinutes(dto.prepMinutes());
+        r.setCookMinutes(dto.cookMinutes());
+        r.setDietTags(dto.dietTags());
+        r.setCategories(dto.categories());
+        // Zutaten/Steps werden NICHT verändert
+
+        repository.save(r);
+    }
+
+    @Transactional
     public void delete(long id) {
         if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found");
         }
-        repository.deleteById(id); // Cascade/OrphanRemoval übernimmt Ingredients/Steps
+        repository.deleteById(id); // OrphanRemoval löscht Ingredients/Steps mit
     }
 
     private void validateBaseline(Set<DietTag> tags) {
