@@ -26,11 +26,22 @@ public class RecipeController {
         return service.findAll();
     }
 
+    @GetMapping("/{id}")
+    public RecipeReadDto getOne(@PathVariable Long id) {
+        return service.findOne(id);
+    }
+
     @PostMapping
     public ResponseEntity<CreatedIdResponse> create(@RequestBody @jakarta.validation.Valid RecipeCreateDto dto) {
         Recipe created = service.create(dto);
         return ResponseEntity
                 .created(URI.create("/recipes/" + created.getId()))
                 .body(new CreatedIdResponse(created.getId()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build(); // 204
     }
 }

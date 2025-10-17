@@ -7,8 +7,10 @@ import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto;
 import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeReadDto;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeCreateMapper;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeReadMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
@@ -33,11 +35,26 @@ public class RecipeService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public RecipeReadDto findOne(long id) {
+        var recipe = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found"));
+        return readMapper.toDto(recipe);
+    }
+
     @Transactional
     public Recipe create(RecipeCreateDto dto) {
         validateBaseline(dto.dietTags());
         Recipe entity = createMapper.toEntity(dto);
         return repository.save(entity);
+    }
+
+    @Transactional
+    public void delete(long id) {
+        if (!repository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found");
+        }
+        repository.deleteById(id); // Cascade/OrphanRemoval übernimmt Ingredients/Steps
     }
 
     private void validateBaseline(Set<DietTag> tags) {
