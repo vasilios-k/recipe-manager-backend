@@ -2,7 +2,9 @@ package de.htw.berlin.webtech.recipe_manager.web;
 
 import de.htw.berlin.webtech.recipe_manager.domain.Recipe;
 import de.htw.berlin.webtech.recipe_manager.service.RecipeService;
+import de.htw.berlin.webtech.recipe_manager.web.dto.CreatedIdResponse;
 import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeReadDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +22,15 @@ public class RecipeController {
     }
 
     @GetMapping
-    public List<Recipe> getAll() {
+    public List<RecipeReadDto> getAll() {
         return service.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<de.htw.berlin.webtech.recipe_manager.web.dto.CreatedIdResponse> create(
-            @RequestBody @jakarta.validation.Valid de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto dto
-    ) {
-        var created = service.create(dto);
-        var body = new de.htw.berlin.webtech.recipe_manager.web.dto.CreatedIdResponse(created.getId());
+    public ResponseEntity<CreatedIdResponse> create(@RequestBody @jakarta.validation.Valid RecipeCreateDto dto) {
+        Recipe created = service.create(dto);
         return ResponseEntity
                 .created(URI.create("/recipes/" + created.getId()))
-                .body(body);
+                .body(new CreatedIdResponse(created.getId()));
     }
 }

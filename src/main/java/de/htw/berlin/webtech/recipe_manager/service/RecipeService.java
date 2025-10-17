@@ -4,7 +4,9 @@ import de.htw.berlin.webtech.recipe_manager.domain.DietTag;
 import de.htw.berlin.webtech.recipe_manager.domain.Recipe;
 import de.htw.berlin.webtech.recipe_manager.repo.RecipeRepository;
 import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeReadDto;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeCreateMapper;
+import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeReadMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,15 +18,19 @@ public class RecipeService {
 
     private final RecipeRepository repository;
     private final RecipeCreateMapper createMapper;
+    private final RecipeReadMapper readMapper;
 
-    public RecipeService(RecipeRepository repository, RecipeCreateMapper createMapper) {
+    public RecipeService(RecipeRepository repository, RecipeCreateMapper createMapper, RecipeReadMapper readMapper) {
         this.repository = repository;
         this.createMapper = createMapper;
+        this.readMapper = readMapper;
     }
 
     @Transactional(readOnly = true)
-    public List<Recipe> findAll() {
-        return repository.findAll();
+    public List<RecipeReadDto> findAll() {
+        return repository.findAll().stream()
+                .map(readMapper::toDto)
+                .toList();
     }
 
     @Transactional
