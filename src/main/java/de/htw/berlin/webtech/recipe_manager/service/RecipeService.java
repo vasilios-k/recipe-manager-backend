@@ -12,6 +12,8 @@ import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeUpdateDto;
 import de.htw.berlin.webtech.recipe_manager.web.dto.StepCreateDto;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeCreateMapper;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeReadMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,14 @@ public class RecipeService {
         var recipe = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found"));
         return readMapper.toDto(recipe);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RecipeReadDto> findPaged(String q, Pageable pageable) {
+        if (q == null || q.isBlank()) {
+            return repository.findAll(pageable).map(readMapper::toDto);
+        }
+        return repository.search(q, pageable).map(readMapper::toDto);
     }
 
     @Transactional
