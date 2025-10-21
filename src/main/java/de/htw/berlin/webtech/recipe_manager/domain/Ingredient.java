@@ -1,6 +1,9 @@
 package de.htw.berlin.webtech.recipe_manager.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -9,11 +12,14 @@ public class Ingredient {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String name;
 
+    @NotNull
     @Column(precision = 19, scale = 4)
     private BigDecimal amount;
 
+    @NotBlank
     private String unit;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

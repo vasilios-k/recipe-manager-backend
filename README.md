@@ -15,11 +15,20 @@ A tiny web application to gather and search for cooking/baking recipes. This app
     - Pflichtfelder (z. B. `title`, Minuten ≥ 0) via Bean Validation → **400** mit Fehlermeldung
     - Nicht vorhandene IDs → **404**
 - **REST-API**
-    - `GET  /recipes` – Liste aller Rezepte
-    - `GET  /recipes/{id}` – Einzelnes Rezept inkl. Zutaten/Schritten
-    - `POST /recipes` – Rezept anlegen, **Antwort:** `{ "id": <neu> }`
-    - `PUT  /recipes/{id}` – **Voll-Update** (Zutaten/Steps werden ersetzt)
-    - `DELETE /recipes/{id}` – Rezept löschen (**204**)
+  - `GET /recipes` → Liste (inkl. Zutaten/Schritte)
+- `GET /recipes/{id}` → Einzelnes Rezept (404 wenn nicht vorhanden)
+- `POST /recipes` → erstellt Rezept → `201 { "id": <neu> }`
+- `PUT /recipes/{id}` → **Basisfelder aktualisieren** (title, description, prepMinutes, cookMinutes, dietTags, categories) → `204`
+- `DELETE /recipes/{id}` → löscht Rezept → `204`
+
+ **Sub-Resources (Listen werden vollständig ersetzt)**
+- `PUT /recipes/{id}/ingredients` → ersetzt **gesamte Zutatenliste** → `204`
+- `PUT /recipes/{id}/steps` → ersetzt **gesamte Schrittliste** → `204`
+
+### Fehlerverhalten
+- Validation (fehlende/ungültige Felder) → `400`
+- Baseline-Regel verletzt (mehr als 1 Baseline-Tag) → `400`
+- Nicht gefunden → `404`
 - **Sonstiges**
     - CORS konfigurierbar (lokal + Render-Frontend)
     - DB-Konfiguration über ENV (`DB_URL` im JDBC-Format, `DB_USERNAME`, `DB_PASSWORD`)

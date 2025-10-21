@@ -1,4 +1,3 @@
-// src/main/java/.../config/CorsConfig.java
 package de.htw.berlin.webtech.recipe_manager.config;
 
 import org.springframework.context.annotation.Bean;
@@ -17,9 +16,12 @@ public class CorsConfig {
                         .allowedOriginPatterns(
                                 "http://localhost:*",
                                 "http://127.0.0.1:*",
-                                "https://https://recipe-manager-frontend-qrb9.onrender.com" // Render-Frontend
+                                "https://recipe-manager-frontend-qrb9.onrender.com" // Render-Frontend
                         )
-                        .allowedMethods("GET","POST","PUT","DELETE","OPTIONS");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(false)
+                        .maxAge(3600);
             }
         };
     }

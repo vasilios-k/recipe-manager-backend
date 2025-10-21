@@ -5,7 +5,11 @@ import de.htw.berlin.webtech.recipe_manager.domain.Ingredient;
 import de.htw.berlin.webtech.recipe_manager.domain.Recipe;
 import de.htw.berlin.webtech.recipe_manager.domain.Step;
 import de.htw.berlin.webtech.recipe_manager.repo.RecipeRepository;
-import de.htw.berlin.webtech.recipe_manager.web.dto.*;
+import de.htw.berlin.webtech.recipe_manager.web.dto.IngredientCreateDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeCreateDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeReadDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.RecipeUpdateDto;
+import de.htw.berlin.webtech.recipe_manager.web.dto.StepCreateDto;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeCreateMapper;
 import de.htw.berlin.webtech.recipe_manager.web.mapper.RecipeReadMapper;
 import org.springframework.http.HttpStatus;
@@ -51,14 +55,14 @@ public class RecipeService {
         return repository.save(entity);
     }
 
+    // PUT: nur Basisfelder
     @Transactional
-    public void updateFull(long id, RecipeUpdateFullDto dto) {
-        validateBaseline(dto.dietTags());
-
+    public void updateBase(long id, RecipeUpdateDto dto) {
         var r = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found"));
 
-        // Basisfelder
+        validateBaseline(dto.dietTags());
+
         r.setTitle(dto.title());
         r.setDescription(dto.description());
         r.setPrepMinutes(dto.prepMinutes());
@@ -66,29 +70,47 @@ public class RecipeService {
         r.setDietTags(dto.dietTags());
         r.setCategories(dto.categories());
 
-        // Ingredients: bestehende Collection INHALT ersetzen
-        r.getIngredients().clear();
-        for (IngredientCreateDto d : dto.ingredients()) {
-            var i = new Ingredient();
-            i.setName(d.name());
-            i.setAmount(d.amount());
-            i.setUnit(d.unit());
-            i.setRecipe(r);
-            r.getIngredients().add(i);
+        repository.save(r);
+    }
+
+    // Sub-Resource: Zutatenliste komplett ersetzen
+    @Transactional
+    public void replaceIngredients(long id, List<IngredientCreateDto> list) {
+        var r = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found"));
+
+        r.getIngredients().clear(); // orphanRemoval löscht alte
+        if (list != null) {
+            for (var d : list) {
+                var i = new Ingredient();
+                i.setName(d.name());
+                i.setAmount(d.amount());
+                i.setUnit(d.unit());
+                i.setRecipe(r); // Backref
+                r.getIngredients().add(i);
+            }
         }
+        repository.save(r);
+    }
 
-        // Steps: ebenfalls Inhalt ersetzen (stabile Reihenfolge)
+    // Sub-Resource: Schrittliste komplett ersetzen (sortiert nach position)
+    @Transactional
+    public void replaceSteps(long id, List<StepCreateDto> list) {
+        var r = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe " + id + " not found"));
+
         r.getSteps().clear();
-        dto.steps().stream()
-                .sorted(Comparator.comparing(s -> s.position() == null ? 0 : s.position()))
-                .forEach(d -> {
-                    var s = new Step();
-                    s.setPosition(d.position() == null ? 0 : d.position());
-                    s.setText(d.text());
-                    s.setRecipe(r);
-                    r.getSteps().add(s);
-                });
-
+        if (list != null) {
+            list.stream()
+                    .sorted(Comparator.comparing(s -> s.position() == null ? 0 : s.position()))
+                    .forEach(d -> {
+                        var s = new Step();
+                        s.setPosition(d.position() == null ? 0 : d.position());
+                        s.setText(d.text());
+                        s.setRecipe(r); // Backref
+                        r.getSteps().add(s);
+                    });
+        }
         repository.save(r);
     }
 
