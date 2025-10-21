@@ -16,7 +16,12 @@ public enum DietTag {
     // allergen-/unverträglichkeitsbezogen (beliebig kombinierbar)
     GLUTEN_FREE(DietGroup.ALLERGEN_FREE),
     LACTOSE_FREE(DietGroup.ALLERGEN_FREE),
-    NUT_FREE(DietGroup.ALLERGEN_FREE),
+    SOY_FREE(DietGroup.ALLERGEN_FREE),
+    EGG_FREE(DietGroup.ALLERGEN_FREE),
+    SHELLFISH_FREE(DietGroup.ALLERGEN_FREE),
+    SESAME_FREE(DietGroup.ALLERGEN_FREE),
+    PEANUT_FREE(DietGroup.ALLERGEN_FREE),
+    LOW_FODMAP(DietGroup.ALLERGEN_FREE),
 
     // religiös/ethisch (orthogonal zur BASELINE)
     HALAL(DietGroup.OTHER),
@@ -26,9 +31,22 @@ public enum DietTag {
     LOW_CARB(DietGroup.MACRO),
     HIGH_PROTEIN(DietGroup.MACRO),
     LOW_FAT(DietGroup.MACRO),
+    LOW_SUGAR(DietGroup.MACRO),
+    NO_ADDED_SUGAR(DietGroup.MACRO),
+    KETO(DietGroup.MACRO),
+    PALEO(DietGroup.MACRO),
+    HIGH_FIBER(DietGroup.MACRO),
+    LOW_SODIUM(DietGroup.MACRO),
 
     // Technik/sonstige
-    NO_BAKE(DietGroup.OTHER);
+    NO_BAKE(DietGroup.OTHER),
+    AIR_FRYER(DietGroup.OTHER),
+    INSTANT_POT(DietGroup.OTHER),
+    ONE_POT(DietGroup.OTHER),
+    MEAL_PREP(DietGroup.OTHER),
+    SPICY(DietGroup.OTHER),
+    ALCOHOL_FREE(DietGroup.OTHER);
+
 
     private final DietGroup group;
 
