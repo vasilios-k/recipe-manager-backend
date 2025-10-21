@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.lang.reflect.Field;
@@ -30,7 +31,8 @@ class RecipeControllerTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper om;
 
-    @MockBean RecipeService service;
+    @MockitoBean
+    RecipeService service;
 
     @Test
     void create_returns201_withId() throws Exception {
