@@ -15,10 +15,17 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * Globale Fehlerbehandlung für saubere, einheitliche JSON-Fehlerantworten.
+ * Jeder Handler wandelt eine Exception in (status, body) um.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404/… exakt respektieren
+    /**
+     * Respektiere ResponseStatusException exakt (z. B. 404).
+     * Nachricht aus ex.getReason() oder Fallback auf Standardtext.
+     */
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatus(
             ResponseStatusException ex, HttpServletRequest request) {
@@ -28,7 +35,10 @@ public class GlobalExceptionHandler {
         return resp(status, msg, request, null);
     }
 
-    // 400: Bean Validation
+    /**
+     * 400 – Bean Validation (z. B. @Valid im Controller schlug fehl).
+     * Extrahiert Feldname + Meldung pro Verstoß in ein Array "violations".
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -41,21 +51,29 @@ public class GlobalExceptionHandler {
         return resp(HttpStatus.BAD_REQUEST, "Validation failed", request, Map.of("violations", violations));
     }
 
-    // 400: Malformed JSON
+    /**
+     * 400 – JSON nicht lesbar (z. B. Syntaxfehler).
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleNotReadable(
             HttpMessageNotReadableException ex, HttpServletRequest request) {
         return resp(HttpStatus.BAD_REQUEST, "Malformed JSON request", request, null);
     }
 
-    // 400: fachliche Fehler
+    /**
+     * 400 – fachliche Fehler aus dem Code (IllegalArgumentException).
+     * z. B. Baseline-Regel verletzt.
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
         return resp(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null);
     }
 
-    // 400: unwrap transaktionale Wrapper
+    /**
+     * 400/500 – transaktionale Wrapper (z. B. Bean Validation tief in der Persistence).
+     * Versucht, die eigentliche IllegalArgumentException freizulegen.
+     */
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<Map<String, Object>> handleTxSystem(
             TransactionSystemException ex, HttpServletRequest request) {
@@ -66,7 +84,10 @@ public class GlobalExceptionHandler {
         return resp(HttpStatus.INTERNAL_SERVER_ERROR, "Transaction error", request, null);
     }
 
-    // 409: DB-Konflikte — **Root-Cause ins message packen**
+    /**
+     * 409 – Datenbankkonflikte (z. B. Unique Constraint verletzt).
+     * Gibt die Root-Cause-Message im Body aus (hilft beim Debuggen).
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDataIntegrity(
             DataIntegrityViolationException ex, HttpServletRequest request) {
@@ -76,13 +97,16 @@ public class GlobalExceptionHandler {
         return resp(HttpStatus.CONFLICT, detail, request, null);
     }
 
-    // 500: Fallback
+    /**
+     * 500 – Fallback für alles Unerwartete.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAny(
             Exception ex, HttpServletRequest request) {
         return resp(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", request, null);
     }
 
+    // Hilfsmethode: standardisierte Fehlerantwort
     private ResponseEntity<Map<String, Object>> resp(HttpStatus status, String message, HttpServletRequest req, Map<String, ?> extra) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", Instant.now().toString());

@@ -10,40 +10,51 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
+/**
+ * Mapper: wandelt ein eingehendes RecipeCreateDto in die persistierbare Recipe-Entität um.
+ * Setzt dabei auch die Backrefs (Kind -> Parent).
+ */
 @Component
 public class RecipeCreateMapper {
 
+    /**
+     * DTO -> Entity.
+     */
     public Recipe toEntity(RecipeCreateDto dto) {
         Recipe r = new Recipe();
-        r.setTitle(nvl(dto.title()));
-        r.setDescription(dto.description());
-        r.setPrepMinutes(nvl(dto.prepMinutes()));
-        r.setCookMinutes(nvl(dto.cookMinutes()));
+
+        // Grunddaten (Null-sicher, aber: siehe Hinweise zu nvl(...) weiter unten)
+        r.setTitle(dto.title());
+        r.setDescription(dto.description());    // Beschreibung darf null sein
+        r.setPrepMinutes(dto.prepMinutes());
+        r.setCookMinutes(dto.cookMinutes());
+
+        // Tags & Kategorien (nutzt die Set-Methoden der Entity -> Change Tracking + Baseline-Validierung)
         if (dto.dietTags() != null) r.setDietTags(dto.dietTags());
         if (dto.categories() != null) r.setCategories(dto.categories());
 
-        // Ingredients (mit Backref)
+        // Ingredients (mit Backref auf r)
         var ings = new ArrayList<Ingredient>();
         if (dto.ingredients() != null) {
             for (IngredientCreateDto d : dto.ingredients()) {
                 Ingredient i = new Ingredient();
-                i.setName(nvl(d.name()));
-                i.setAmount(d.amount());   // Ingredient.amount = BigDecimal
-                i.setUnit(d.unit());
-                i.setRecipe(r);
+                i.setName(d.name());
+                i.setAmount(d.amount());     // BigDecimal
+                i.setUnit(d.unit());         // aktuell String (Enum-Entscheidung am Ende)
+                i.setRecipe(r);              // Backref: Kind zeigt auf Parent
                 ings.add(i);
             }
         }
-        r.setIngredients(ings);
+        r.setIngredients(ings); // Entity-Setter setzt Backrefs ebenfalls
 
-        // Steps (mit Backref)
+        // Steps (mit Backref auf r)
         var steps = new ArrayList<Step>();
         if (dto.steps() != null) {
             for (StepCreateDto d : dto.steps()) {
                 Step s = new Step();
-                s.setPosition(d.position() != null ? d.position() : 0);
+                s.setPosition(d.position());  // DTO garantiert  >= 1
                 s.setText(d.text());
-                s.setRecipe(r);
+                s.setRecipe(r);              // Backref
                 steps.add(s);
             }
         }
@@ -52,6 +63,5 @@ public class RecipeCreateMapper {
         return r;
     }
 
-    private String nvl(String s) { return s == null ? "" : s; }
-    private int nvl(Integer i) { return i == null ? 0 : i; }
+
 }
