@@ -27,8 +27,10 @@ public class Ingredient {
             scale = 4)      // davon 4 Nachkommastellen (z. B. 1.2500)
     private BigDecimal amount; // Menge (präzise Dezimalzahl, z. B. 0.5, 1.2500)
 
-    @NotBlank               // Einheit muss vorhanden sein (z. B. "g", "ml", "Stk")
-    private String unit;
+
+    @NotNull // Einheit muss vorhanden sein (z. B. "g", "ml", "Stk")
+    @Enumerated(EnumType.STRING)
+    private Unit unit;
 
     // ---- Beziehung zurück zum Rezept (Viele Zutaten gehören zu EINEM Rezept) ----
     @ManyToOne(fetch = FetchType.LAZY,  // Rezept wird erst geladen, wenn man es wirklich braucht (Performance)
@@ -45,8 +47,8 @@ public class Ingredient {
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public Unit getUnit() { return unit; }
+    public void setUnit(Unit unit) { this.unit = unit; }
 
     public Recipe getRecipe() { return recipe; }
     public void setRecipe(Recipe recipe) { this.recipe = recipe; } // wird beim Setzen in Recipe automatisch gesetzt

@@ -1,5 +1,6 @@
 package de.htw.berlin.webtech.recipe_manager.web.dto;
 
+import de.htw.berlin.webtech.recipe_manager.domain.Unit;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
@@ -9,5 +10,5 @@ import java.math.BigDecimal;
 public record IngredientCreateDto(
         @NotBlank String name,                                             // Pflicht
         @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal amount, // > 0, präzise Dezimalzahl
-        @NotBlank String unit                                              // Pflicht, z. B. "G"
+        @NotNull Unit unit                                              // Pflicht, z. B. "G"
 ) {}

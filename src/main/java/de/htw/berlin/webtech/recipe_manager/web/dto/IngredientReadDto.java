@@ -1,5 +1,7 @@
 package de.htw.berlin.webtech.recipe_manager.web.dto;
 
+import de.htw.berlin.webtech.recipe_manager.domain.Unit;
+
 import java.math.BigDecimal;
 
 /**
@@ -9,5 +11,5 @@ public record IngredientReadDto(
         Long id,            // DB-ID
         String name,        // Name
         BigDecimal amount,  // Menge
-        String unit         // Einheit (als String; ggf. später Enum-Name)
+        Unit unit         // Einheit
 ) {}

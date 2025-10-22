@@ -40,7 +40,7 @@ public class RecipeCreateMapper {
                 Ingredient i = new Ingredient();
                 i.setName(d.name());
                 i.setAmount(d.amount());     // BigDecimal
-                i.setUnit(d.unit());         // aktuell String (Enum-Entscheidung am Ende)
+                i.setUnit(d.unit());         // Enum
                 i.setRecipe(r);              // Backref: Kind zeigt auf Parent
                 ings.add(i);
             }

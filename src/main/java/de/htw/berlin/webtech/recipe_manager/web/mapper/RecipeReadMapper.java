@@ -51,7 +51,7 @@ public class RecipeReadMapper {
                 i.getId(),
                 i.getName(),
                 i.getAmount(),
-                i.getUnit() // aktuell String; bei Enum wäre es i.getUnit().name()
+                i.getUnit()
         );
     }
 
