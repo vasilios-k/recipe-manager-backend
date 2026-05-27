@@ -1,5 +1,6 @@
 package de.htwberlin.webtech.rezept_manager.service;
 
+import de.htwberlin.webtech.rezept_manager.dto.CreateRecipeRequest;
 import de.htwberlin.webtech.rezept_manager.model.Recipe;
 import de.htwberlin.webtech.rezept_manager.repository.RecipeRepository;
 import org.springframework.stereotype.Service;
@@ -17,5 +18,15 @@ public class RecipeService {
 
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
+    }
+
+    public Recipe createRecipe(CreateRecipeRequest request) {
+        Recipe recipe = new Recipe(
+                request.title(),
+                request.category(),
+                request.prepTimeMinutes()
+        );
+
+        return recipeRepository.save(recipe);
     }
 }
